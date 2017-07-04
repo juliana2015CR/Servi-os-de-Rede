@@ -1,0 +1,52 @@
+#!/bin/bash
+parm=($QUERY_STRING)
+printf "Content-type: text/html; charset=utf-8 \n\n"
+printf "<html><head><title>Musicas</title></head><body bgcolor=pink>"
+printf '<img src="/redescmusic/images/logo.png" align="right" width="500px">'
+
+parm=`echo $parm | tr '[:upper:]' '[:lower:]'`
+termo0=`echo $parm | cut -d'=' -f2`
+echo $termo0 | sed "s/%/\\\x/g" > /tmp/caracter.txt 
+termo2=`cat /tmp/caracter.txt`
+termo=`echo -e $termo2`
+caminhos=`find /var/www/html/musicas/* | grep $termo | grep .mp3`
+
+
+cont=0
+if [ ${#caminhos} == 0 ]
+then
+	echo "Música não encontrada" 
+	printf "<br>"
+	printf "<td><a href=/redescmusic >Voltar</a><br></td>"
+else
+
+        printf '<br>'
+        printf '<a href=/redescmusic >Voltar</a><br></>'
+	printf "<h3> Músicas Encontradas </h3><br>"
+
+	printf '<script type="text/javascript">'
+	printf 'var tocar = function(url){'
+	printf '$("#audioPlayer").attr("'src'",url);'
+	printf '} </script>'
+
+	printf '<script src="/jquery.js">'
+	printf '</script>'
+	printf "<audio id=audioPlayer controls autoplay>  </audio>"
+
+for i in $caminhos
+do
+nome=`echo $i | cut -d"/" -f6,7 `
+ 
+
+
+	printf '<table border="1" class="fixo"><col width="350px" />'
+	printf '<tr><td width="380px"> Música '$nome'</td>'
+	printf '<td width="80px"><button onclick='"tocar('/previas/$nome');"'>Reproduzir </button></td>'
+
+	echo   "<td><a href=/musicas/"$nome" download>Download</a><br></td>"
+	cont=`expr $cont + 1`
+done
+fi
+
+
+	printf "</body></html>"

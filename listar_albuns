@@ -1,0 +1,36 @@
+#!/bin/bash
+parm=($QUERY_STRING)
+
+printf "Content-type: text/html; charset=utf-8 \n\n"
+
+
+printf "<html><head><title>Musicas</title></head><body bgcolor=pink>"
+printf '<img src="/redescmusic/images/logo.png" align="right" width="500px">'
+
+printf "<h3>Álbuns</h3>"
+        printf '<br>'
+        printf '<a href=/redescmusic >Voltar</a><br></>'
+
+
+caminhos=`ls /var/www/html/musicas/`
+
+
+cont=0
+if [ ${#caminhos} == 0 ]
+then
+	echo "Não existem álbuns"
+else
+for i in $caminhos
+do
+	nome=`echo $i | cut -d"/" -f6`
+	printf "<audio id=demo$cont src=/musicas/$nome></audio>"
+	printf '<table border="1" class="fixo"><col width="150px" />'
+	printf '<tr><td width="100px" heigth="100px"> <img width="70px" heigth="40px" src="/logo3.png"> Álbum: '$nome'</td>'
+	printf "<td><a href=/cgi-bin/retorna_musica_a?param=$nome>Listar Músicas</a><br></td>"
+cont=`expr $cont + 1`
+
+done
+fi
+
+
+printf "</body></html>"
